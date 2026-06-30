@@ -7,7 +7,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { formatDistanceToNow, parseISO } from 'date-fns';
+import moment from 'moment';
 import { ArrowUpDown, MoreHorizontal, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -141,7 +141,7 @@ export function CallsDataTable({ calls, loading }) {
       accessorFn: (row) => row.createdAt ?? '',
       cell: ({ row }) => (
         <span className="text-muted-foreground" style={{ fontFamily: 'Inter, sans-serif' }}>
-          {row.original.createdAt ? formatDistanceToNow(parseISO(row.original.createdAt), { addSuffix: true }) : '—'}
+          {row.original.createdAt ? moment(row.original.createdAt).fromNow() : '—'}
         </span>
       ),
     },

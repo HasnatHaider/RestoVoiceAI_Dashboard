@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { formatDistanceToNow, parseISO, format } from 'date-fns';
+import moment from 'moment';
 import { Clock, MapPin, Phone, CheckCircle2, XCircle, ChevronRight } from 'lucide-react';
 import { EmptyState } from '@/components/dashboard/EmptyState';
 import { CallDetailSheet } from '@/components/dashboard/CallDetailSheet';
@@ -8,15 +8,15 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 
 const INTENT_CONFIG = {
-  order:       { label: 'Order',       class: 'bg-orange-50 text-orange-600 border-orange-200', dot: 'bg-orange-400' },
+  order: { label: 'Order', class: 'bg-orange-50 text-orange-600 border-orange-200', dot: 'bg-orange-400' },
   reservation: { label: 'Reservation', class: 'bg-emerald-50 text-emerald-600 border-emerald-200', dot: 'bg-emerald-400' },
-  inquiry:     { label: 'Inquiry',     class: 'bg-blue-50 text-blue-600 border-blue-200', dot: 'bg-blue-400' },
-  unknown:     { label: 'Unknown',     class: 'bg-gray-100 text-gray-500 border-gray-200', dot: 'bg-gray-300' },
+  inquiry: { label: 'Inquiry', class: 'bg-blue-50 text-blue-600 border-blue-200', dot: 'bg-blue-400' },
+  unknown: { label: 'Unknown', class: 'bg-gray-100 text-gray-500 border-gray-200', dot: 'bg-gray-300' },
 };
 
 function formatCallId(id) {
   if (!id) return 'Unknown';
-  return id.slice(0, 8).toUpperCase();
+  return id.slice(0, 15).concat("...").toUpperCase();
 }
 
 function CallCard({ call, onClick }) {
@@ -24,7 +24,7 @@ function CallCard({ call, onClick }) {
   const cfg = INTENT_CONFIG[intent] ?? INTENT_CONFIG.unknown;
   const items = call.order?.items ?? [];
   const address = call.order?.deliveryAddress || call.reservation?.branchLocation || '';
-  const when = call.call?.startedAt ?? call.call?.createdAt;
+  const when = call.createdAt;
   const duration = call.call?.durationMinutes;
   const cost = call.call?.cost ?? call.cost ?? 0;
   const success = call.analysis?.success === true;
@@ -44,7 +44,7 @@ function CallCard({ call, onClick }) {
             </p>
             {when && (
               <p className="text-[11px] text-muted-foreground mt-0.5" style={{ fontFamily: 'Inter, sans-serif' }}>
-                {format(parseISO(when), 'MMM d, yyyy · h:mm a')}
+                {moment(when).format('MMM D, YYYY · h:mm A')}
               </p>
             )}
           </div>
@@ -64,7 +64,7 @@ function CallCard({ call, onClick }) {
       {/* Order items */}
       {intent === 'order' && items.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
-          {items.slice(0, 3).map((item, i) => (
+          {items.slice(0, 2).map((item, i) => (
             <span
               key={i}
               className="inline-flex items-center gap-1 bg-muted text-foreground text-[11px] font-medium px-2.5 py-1 rounded-full"
@@ -73,9 +73,9 @@ function CallCard({ call, onClick }) {
               {item.size && item.size !== 'N/A' ? ` · ${item.size}` : ''}
             </span>
           ))}
-          {items.length > 3 && (
+          {items.length > 2 && (
             <span className="inline-flex items-center bg-muted text-muted-foreground text-[11px] px-2.5 py-1 rounded-full" style={{ fontFamily: 'Inter, sans-serif' }}>
-              +{items.length - 3} more
+              +{items.length - 2} more
             </span>
           )}
         </div>
@@ -159,7 +159,7 @@ export function Calls({ calls, loading }) {
   if (!loading && calls.length === 0) return <EmptyState message="No calls recorded yet" />;
 
   const successful = calls.filter((c) => c.analysis?.success === true);
-  const failed     = calls.filter((c) => c.analysis?.success !== true);
+  const failed = calls.filter((c) => c.analysis?.success !== true);
 
   return (
     <div className="px-4 lg:px-6 flex flex-col gap-5">

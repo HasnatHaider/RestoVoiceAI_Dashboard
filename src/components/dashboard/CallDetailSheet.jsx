@@ -5,10 +5,10 @@ import { format, parseISO } from 'date-fns';
 import { cn } from '@/lib/utils';
 
 const INTENT_STYLES = {
-  order:       'bg-orange-50 text-orange-700',
+  order: 'bg-orange-50 text-orange-700',
   reservation: 'bg-green-50 text-green-700',
-  inquiry:     'bg-yellow-50 text-yellow-700',
-  unknown:     'bg-gray-100 text-gray-600',
+  inquiry: 'bg-yellow-50 text-yellow-700',
+  unknown: 'bg-gray-100 text-gray-600',
 };
 
 function SectionLabel({ icon: Icon, children }) {
@@ -50,8 +50,8 @@ export function CallDetailSheet({ call, open, onClose }) {
           {/* Meta chips */}
           <div className="flex flex-wrap gap-2 mb-4">
             {[
-              { icon: Clock,       label: call.call?.durationMinutes ? `${call.call.durationMinutes.toFixed(1)} min` : 'N/A' },
-              { icon: DollarSign,  label: `$${(call.cost ?? 0).toFixed(4)}` },
+              { icon: Clock, label: call.call?.durationMinutes ? `${call.call.durationMinutes.toFixed(1)} min` : 'N/A' },
+              { icon: DollarSign, label: `$${(call.cost ?? 0).toFixed(4)}` },
             ].map(({ icon: Icon, label }) => (
               <span key={label} className="flex items-center gap-1.5 px-3 py-1.5 bg-secondary border border-border rounded-full text-[12px] text-muted-foreground" style={{ fontFamily: 'Inter, sans-serif' }}>
                 <Icon size={11} />
@@ -80,6 +80,13 @@ export function CallDetailSheet({ call, open, onClose }) {
         {/* Body */}
         <div className="px-8 py-6 flex flex-col gap-7">
 
+          {/* Customer */}
+          <div>
+            <SectionLabel>Customer Information</SectionLabel>
+            <Row label="Customer Name" value={call.customer?.name} />
+            {call.customer?.phone != "N/A" && <Row label="Phone Number" value={call.customer?.phone} />}
+          </div>
+
           {/* Analysis */}
           <div>
             <SectionLabel>Analysis</SectionLabel>
@@ -97,10 +104,6 @@ export function CallDetailSheet({ call, open, onClose }) {
               <Separator />
               <div>
                 <SectionLabel icon={ShoppingBag}>Order</SectionLabel>
-                <Row label="Type"    value={call.order.type} />
-                <Row label="Total"   value={call.order.totalPrice} />
-                <Row label="Branch"  value={call.order.branchLocation} />
-                <Row label="Address" value={call.order.deliveryAddress} />
                 {call.order.items?.length > 0 && (
                   <div className="mt-3">
                     <p className="text-[12px] text-muted-foreground mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>Items</p>
@@ -108,7 +111,7 @@ export function CallDetailSheet({ call, open, onClose }) {
                       {call.order.items.map((item, i) => {
                         const label = typeof item === 'string'
                           ? item
-                          : [item.name, item.size, item.quantity ? `×${item.quantity}` : null, item.options].filter(Boolean).join(' · ');
+                          : [item.name, (item.size === "N/A" ? "" : item.size), item.quantity ? `×${item.quantity}` : null, item.options].filter(Boolean).join(' · ');
                         return (
                           <p key={i} className="text-[13px] text-foreground" style={{ fontFamily: 'Inter, sans-serif' }}>· {label}</p>
                         );
@@ -116,7 +119,11 @@ export function CallDetailSheet({ call, open, onClose }) {
                     </div>
                   </div>
                 )}
-                {call.order.notes && <Row label="Notes" value={call.order.notes} />}
+                <Row label="Type" value={call.order.type} />
+                <Row label="Total" value={call.order.totalPrice} />
+                <Row label="Branch" value={call.order.branchLocation} />
+                <Row label="Address" value={call.order.deliveryAddress} />
+                {call.order.notes != "N/A" && <Row label="Notes" value={call.order.notes} />}
               </div>
             </>
           )}
@@ -127,8 +134,8 @@ export function CallDetailSheet({ call, open, onClose }) {
               <Separator />
               <div>
                 <SectionLabel icon={CalendarDays}>Reservation</SectionLabel>
-                <Row label="Date"   value={call.reservation.date} />
-                <Row label="Time"   value={call.reservation.time} />
+                <Row label="Date" value={call.reservation.date} />
+                <Row label="Time" value={call.reservation.time} />
                 <Row label="Guests" value={call.reservation.guestCount ? `${call.reservation.guestCount} guests` : null} />
                 <Row label="Branch" value={call.reservation.branchLocation} />
                 {call.reservation.notes && <Row label="Notes" value={call.reservation.notes} />}

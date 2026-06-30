@@ -88,12 +88,12 @@ export function AppSidebar(props) {
                   <ChevronsUpDown className="ml-auto size-4 text-muted-foreground" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
-              <DropdownMenuContent side="top" align="start" className="w-56">
+              {/* <DropdownMenuContent side="top" align="start" className="w-56">
                 <DropdownMenuItem className="cursor-pointer">
                   <LogOut className="mr-2 size-4" />
                   <span style={{ fontFamily: 'Inter, sans-serif' }}>Sign out</span>
                 </DropdownMenuItem>
-              </DropdownMenuContent>
+              </DropdownMenuContent> */}
             </DropdownMenu>
           </SidebarMenuItem>
         </SidebarMenu>
